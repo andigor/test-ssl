@@ -46,7 +46,21 @@ function server_first_level_cert_and_key_java_client_second_level_cert_failure()
    && echo $0 "Success" || echo $0 "Failure"
 }
 
+function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
+{
+ killall server &> /dev/null
+ ../server/server ../server/foo-cert.pem ../server/foo-key.pem &> /dev/null &
+
+ sleep 1
+ CLIENT_OUT=$(cd ../java-client && java SslClient unrelared-cert/cert.pem 2>&1)
+ 
+ echo $CLIENT_OUT \
+   | grep -q "unable to find valid certification path to requested target" \
+   && echo $0 "Success" || echo $0 "Failure"
+}
+
 server_second_level_cert_and_key_java_client_second_level_cert_success
 server_second_level_cert_and_key_java_client_first_level_cert_success
 server_first_level_cert_and_key_java_client_first_level_cert_success
 server_first_level_cert_and_key_java_client_second_level_cert_failure
+server_second_level_cert_and_key_java_client_unrelated_cert_failure
