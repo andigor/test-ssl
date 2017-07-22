@@ -1,8 +1,8 @@
 server : main.o
-	g++ $< -o $@ -L /usr/lib/x86_64-linux-gnu/ -lssl
+	g++ $< -o $@ -L /usr/lib/x86_64-linux-gnu/ -lssl -lcrypto
 
-main.o : main.cpp main.h
-	g++ -c $< -o $@
+main.o : serv.cpp
+	g++ -c $< -o $@ 
 
 .PHONY: clean
 
