@@ -5,3 +5,4 @@ client/client
 compilation_flags.txt
 index.txt.attr
 *.swp
+SslClient.class
