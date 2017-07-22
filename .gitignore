@@ -1,3 +1,5 @@
 *.o
+*.old
 server/server
 compilation_flags.txt
+index.txt.attr
