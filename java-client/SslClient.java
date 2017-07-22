@@ -1,6 +1,11 @@
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import java.net.URL;
 
@@ -41,20 +46,52 @@ public class SslClient
       SSLContext context = SSLContext.getInstance("TLS");
       context.init(null, tmf.getTrustManagers(), null);
 
-      URL url = new URL("https://127.0.0.1:1111");
+      //URL url = new URL("https://127.0.0.1:1111");
       //URL url = new URL("https://www.google.com");
-      HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-      urlConnection.setSSLSocketFactory(context.getSocketFactory());
-      HostnameVerifier allHostsValid = new HostnameVerifier() {
-        public boolean verify(String hostname, SSLSession session)
+      //HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+      //urlConnection.setSSLSocketFactory(context.getSocketFactory());
+      //HostnameVerifier allHostsValid = new HostnameVerifier() {
+      //  public boolean verify(String hostname, SSLSession session)
+      //  {
+      //    System.out.println("verifyng host: " + hostname);
+      //    return true;
+      //  }
+      //};
+      //urlConnection.setHostnameVerifier(allHostsValid);
+
+      SSLSocketFactory fact = (SSLSocketFactory) context.getSocketFactory();
+      SSLSocket socket = (SSLSocket) fact.createSocket("127.0.0.1", 1111);
+
+      BufferedOutputStream dos = new BufferedOutputStream(socket.getOutputStream());
+      DataInputStream dis = new DataInputStream(socket.getInputStream());
+
+      dos.write("hello".getBytes());
+      dos.flush();
+
+      ArrayList<Byte> bytes = new ArrayList<Byte>();
+      while (true)
+      {
+        try 
         {
-          System.out.println("verifyng host: " + hostname);
-          return true;
+          Byte b = dis.readByte();
+          //System.out.println(b);
+          bytes.add(b);
         }
-      };
-      urlConnection.setHostnameVerifier(allHostsValid);
-      InputStream in = urlConnection.getInputStream();
-      System.out.println("done");
+        catch (Exception e)
+        {
+          System.out.println("end of reading");
+          break;
+        }
+      }
+      byte[] array = new byte[bytes.size()];
+      int i = 0;
+      for (Byte b: bytes)
+      {
+        array[i++] = b;
+      }
+      String resp = new String(array);
+      //InputStream in = urlConnection.getInputStream();
+      System.out.println("done: " + resp);
     }
     catch (Exception e) {
       System.out.println(e.getMessage());
