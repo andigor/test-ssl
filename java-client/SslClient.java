@@ -20,11 +20,23 @@ public class SslClient
   public static void main(String[] args)
   {
     try {
-      //KeyStore ksKeys = KeyStore.getInstance("JKS");
-      //ksKeys.load(new FileInputStream("testKeys"), null);
-      
+      String certPath = new String("../server/foo-cert.pem");
+      boolean foundSert = false;
+      for (String s: args)
+      {
+        certPath = s;
+        foundSert = true;
+        break;
+      }
+      if (!foundSert) {
+        System.out.println("Using default certPath: " + certPath);
+      }
+
+
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
-      InputStream caInput = new BufferedInputStream(new FileInputStream("../server/foo-cert.pem"));
+      InputStream caInput = new BufferedInputStream(new FileInputStream(certPath));
+      //InputStream caInput = new BufferedInputStream(new FileInputStream("../ca/ca-cert.pem"));
+      //InputStream caInput = new BufferedInputStream(new FileInputStream("fake-cert/cert.pem"));
 
       Certificate ca = cf.generateCertificate(caInput);
       try {
