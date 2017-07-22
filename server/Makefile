@@ -3,3 +3,9 @@ server : main.o
 
 main.o : main.cpp main.h
 	g++ -c $< -o $@
+
+.PHONY: clean
+
+
+clean: 
+	rm *.o server	
