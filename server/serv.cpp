@@ -6,6 +6,9 @@
    Simplified to be even more minimal
    12/98 - 4/99 Wade Scholine <wades@mail.cybg.com> */
 
+#include <string>
+#include <iostream>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -28,16 +31,40 @@
 /* define HOME to be dir for key and cert files... */
 #define HOME "./"
 /* Make these what you want for cert & key files */
-#define CERTF  HOME "foo-cert.pem"
-#define KEYF  HOME  "foo-key.pem"
+//#define CERTF  HOME "foo-cert.pem"
+//#define KEYF  HOME  "foo-key.pem"
 
+static std::string CERTF(HOME "../ca/ca-cert.pem");
+static std::string KEYF (HOME "../ca/ca-key.pem");
 
 #define CHK_NULL(x) if ((x)==NULL) exit (1)
 #define CHK_ERR(err,s) if ((err)==-1) { perror(s); exit(1); }
 #define CHK_SSL(err) if ((err)==-1) { ERR_print_errors_fp(stderr); exit(2); }
 
-int main ()
+int main (int argc, char ** argv)
 {
+  size_t counter = 1;
+  bool certFound = false;
+  bool keyFound = false;
+
+  if (counter < argc) {
+    CERTF = argv[counter++];
+    certFound = true;
+  }
+
+  if (counter < argc) {
+    KEYF = argv[counter++];
+    keyFound = true;
+  }
+
+  if (!certFound) {
+    std::cout << "using default certPath: " << CERTF << std::endl;
+  }
+
+  if (!keyFound) {
+    std::cout << "using default keyPath: " << KEYF << std::endl;
+  }
+
   int err;
   int listen_sd;
   int sd;
@@ -61,11 +88,11 @@ int main ()
     exit(2);
   }
   
-  if (SSL_CTX_use_certificate_file(ctx, CERTF, SSL_FILETYPE_PEM) <= 0) {
+  if (SSL_CTX_use_certificate_file(ctx, CERTF.c_str(), SSL_FILETYPE_PEM) <= 0) {
     ERR_print_errors_fp(stderr);
     exit(3);
   }
-  if (SSL_CTX_use_PrivateKey_file(ctx, KEYF, SSL_FILETYPE_PEM) <= 0) {
+  if (SSL_CTX_use_PrivateKey_file(ctx, KEYF.c_str(), SSL_FILETYPE_PEM) <= 0) {
     ERR_print_errors_fp(stderr);
     exit(4);
   }
