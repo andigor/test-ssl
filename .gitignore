@@ -1,5 +1,7 @@
 *.o
 *.old
 server/server
+client/client
 compilation_flags.txt
 index.txt.attr
+*.swp
