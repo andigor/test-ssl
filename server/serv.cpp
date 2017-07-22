@@ -29,7 +29,7 @@
 #define HOME "./"
 /* Make these what you want for cert & key files */
 #define CERTF  HOME "foo-cert.pem"
-#define KEYF  HOME  "foo-cert.pem"
+#define KEYF  HOME  "foo-key.pem"
 
 
 #define CHK_NULL(x) if ((x)==NULL) exit (1)
