@@ -21,6 +21,7 @@ public class SslClient
 {
   public static void main(String[] args)
   {
+    Conscrypt.checkAvailability();
     try {
       String certPath = new String("../server/foo-cert.pem");
       boolean foundSert = false;
