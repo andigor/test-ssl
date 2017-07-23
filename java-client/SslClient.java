@@ -16,12 +16,16 @@ import java.security.KeyStore;
 import java.security.cert.*;
 
 import org.conscrypt.Conscrypt;
+import java.security.Provider;
+import java.security.Security;
 
 public class SslClient
 {
   public static void main(String[] args)
   {
     Conscrypt.checkAvailability();
+    Provider conscryptProvider = Conscrypt.newProvider();
+    Security.insertProviderAt(conscryptProvider, 1);
     try {
       String certPath = new String("../server/foo-cert.pem");
       boolean foundSert = false;
