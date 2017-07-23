@@ -1,7 +1,9 @@
 #!/bin/bash 
 
-CLASS_PATH="/home/amotsok/proj/ssl/conscrypt/openjdk/build/libs/conscrypt-openjdk-1.1.0-SNAPSHOT.jar"
+CLASS_PATH="/home/amotsok/proj/ssl/conscrypt/openjdk/build/libs/conscrypt-openjdk-1.1.0-SNAPSHOT.jar:."
 RUN_SSL_CLIENT="cd ../java-client && java -classpath $CLASS_PATH SslClient"
+
+#TODO: unlink server from terminal
 
 function server_second_level_cert_and_key_java_client_second_level_cert_success()
 {
@@ -9,9 +11,9 @@ function server_second_level_cert_and_key_java_client_second_level_cert_success(
  ../server/server ../server/foo-cert.pem ../server/foo-key.pem &> /dev/null &
 
  sleep 1
- CLIENT_OUT=$($RUN_SSL_CLIENT ../server/foo-cert.pem)
- 
- echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure"
+ CLIENT_OUT=$(eval $RUN_SSL_CLIENT ../server/foo-cert.pem)
+
+ echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure: $CLIENT_OUT"
 }
 
 function server_second_level_cert_and_key_java_client_first_level_cert_success()
@@ -20,9 +22,9 @@ function server_second_level_cert_and_key_java_client_first_level_cert_success()
  ../server/server ../server/foo-cert.pem ../server/foo-key.pem &> /dev/null &
 
  sleep 1
- CLIENT_OUT=$($RUN_SSL_CLIENT ../ca/ca-cert.pem)
+ CLIENT_OUT=$(eval $RUN_SSL_CLIENT ../ca/ca-cert.pem)
  
- echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure"
+ echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure: $CLIENT_OUT"
 }
 
 function server_first_level_cert_and_key_java_client_first_level_cert_success()
@@ -31,9 +33,9 @@ function server_first_level_cert_and_key_java_client_first_level_cert_success()
  ../server/server ../ca/ca-cert.pem ../ca/ca-key.pem &> /dev/null &
 
  sleep 1
- CLIENT_OUT=$($RUN_SSL_CLIENT ../ca/ca-cert.pem)
+ CLIENT_OUT=$(eval $RUN_SSL_CLIENT ../ca/ca-cert.pem)
  
- echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure"
+ echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure: $CLIENT_OUT"
 }
 
 function server_first_level_cert_and_key_java_client_second_level_cert_failure()
@@ -42,11 +44,11 @@ function server_first_level_cert_and_key_java_client_second_level_cert_failure()
  ../server/server ../ca/ca-cert.pem ../ca/ca-key.pem &> /dev/null &
 
  sleep 1
- CLIENT_OUT=$($RUN_SSL_CLIENT ../server/foo-cert.pem 2>&1)
+ CLIENT_OUT=$(eval $RUN_SSL_CLIENT ../server/foo-cert.pem 2>&1)
  
  echo $CLIENT_OUT \
    | grep -q "unable to find valid certification path to requested target" \
-   && echo $0 "Success" || echo $0 "Failure"
+   && echo $0 "Success" || echo $0 "Failure: $CLIENT_OUT"
 }
 
 function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
@@ -55,11 +57,11 @@ function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
  ../server/server ../server/foo-cert.pem ../server/foo-key.pem &> /dev/null &
 
  sleep 1
- CLIENT_OUT=$($RUN_SSL_CLIENT unrelared-cert/cert.pem 2>&1)
+ CLIENT_OUT=$(eval $RUN_SSL_CLIENT unrelared-cert/cert.pem 2>&1)
  
  echo $CLIENT_OUT \
    | grep -q "unable to find valid certification path to requested target" \
-   && echo $0 "Success" || echo $0 "Failure"
+   && echo $0 "Success" || echo $0 "Failure: $CLIENT_OUT"
 }
 
 server_second_level_cert_and_key_java_client_second_level_cert_success
