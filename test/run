@@ -5,15 +5,30 @@ RUN_SSL_CLIENT="cd ../java-client && java -classpath $CLASS_PATH SslClient"
 
 #TODO: unlink server from terminal
 
-function server_second_level_cert_and_key_java_client_second_level_cert_success()
+function run_server()
 {
  killall server &> /dev/null
- ../server/server ../server/foo-cert.pem ../server/foo-key.pem &> /dev/null &
-
+ echo >> server.log
+ echo "command line: $1" >> server.log
+ eval "$1 &>> server.log &"
  sleep 1
- CLIENT_OUT=$(eval $RUN_SSL_CLIENT ../server/foo-cert.pem)
+}
 
- echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure: $CLIENT_OUT"
+function server_second_level_cert_and_key_java_client_second_level_cert_success()
+{
+ SERVER_CERT="../server/foo-cert.pem"
+ SERVER_KEY="../server/foo-key.pem"
+ SERVER_RUN="../server/server $SERVER_CERT $SERVER_KEY"
+
+ run_server "$SERVER_RUN"
+
+ CLIENT_CERT=$SERVER_CERT
+ CLIENT_RUN="$RUN_SSL_CLIENT $SERVER_CERT"
+ CLIENT_OUT=$(eval $CLIENT_RUN 2>&1)
+
+ echo $CLIENT_OUT | grep -q "I hear you" \
+  && echo $0 "Success"  \
+  || { echo $1 "Failure: $CLIENT_OUT" && echo "${SERVER_RUN}" && echo "${CLIENT_RUN}"; }
 }
 
 function server_second_level_cert_and_key_java_client_first_level_cert_success()
@@ -64,8 +79,8 @@ function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
    && echo $0 "Success" || echo $0 "Failure: $CLIENT_OUT"
 }
 
-echo -n "1:" && echo $(server_second_level_cert_and_key_java_client_second_level_cert_success)
-echo -n "2:" && echo $(server_second_level_cert_and_key_java_client_first_level_cert_success)
-echo -n "3:" && echo $(server_first_level_cert_and_key_java_client_first_level_cert_success)
-echo -n "4:" && echo $(server_first_level_cert_and_key_java_client_second_level_cert_failure)
-echo -n "5:" && echo $(server_second_level_cert_and_key_java_client_unrelated_cert_failure)
+echo -n "1:" && server_second_level_cert_and_key_java_client_second_level_cert_success 
+#echo -n "2:" && server_second_level_cert_and_key_java_client_first_level_cert_success
+#echo -n "3:" && server_first_level_cert_and_key_java_client_first_level_cert_success
+#echo -n "4:" && server_first_level_cert_and_key_java_client_second_level_cert_failure
+#echo -n "5:" && server_second_level_cert_and_key_java_client_unrelated_cert_failure
