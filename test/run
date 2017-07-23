@@ -84,19 +84,23 @@ function server_first_level_cert_and_key_java_client_second_level_cert_failure()
 
 function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
 {
- killall server &> /dev/null
- ../server/server ../server/foo-cert.pem ../server/foo-key.pem &> /dev/null &
+ SERVER_CERT="../server/foo-cert.pem"
+ SERVER_KEY="../server/foo-key.pem"
+ SERVER_RUN="../server/server $SERVER_CERT $SERVER_KEY"
 
- sleep 1
- CLIENT_OUT=$(eval $RUN_SSL_CLIENT unrelared-cert/cert.pem 2>&1)
+ run_server "$SERVER_RUN"
+
+ CLIENT_CERT=unrelared-cert/cert.pem
+ CLIENT_RUN="$RUN_SSL_CLIENT $CLIENT_CERT"
+ CLIENT_OUT=$(eval $CLIENT_RUN 2>&1)
  
- echo $CLIENT_OUT \
-   | grep -q "unable to find valid certification path to requested target" \
-   && echo $0 "Success" || echo $0 "Failure: $CLIENT_OUT"
+ echo $CLIENT_OUT | grep -q "unable to find valid certification path to requested target" \
+  && echo $0 "Success"  \
+  || { echo $1 "Failure: $CLIENT_OUT" && echo "${SERVER_RUN}" && echo "${CLIENT_RUN}"; }
 }
 
 #echo -n "1:" && server_second_level_cert_and_key_java_client_second_level_cert_success 
 #echo -n "2:" && server_second_level_cert_and_key_java_client_first_level_cert_success
 #echo -n "3:" && server_first_level_cert_and_key_java_client_first_level_cert_success
-echo -n "4:" && server_first_level_cert_and_key_java_client_second_level_cert_failure
-#echo -n "5:" && server_second_level_cert_and_key_java_client_unrelated_cert_failure
+#echo -n "4:" && server_first_level_cert_and_key_java_client_second_level_cert_failure
+echo -n "5:" && server_second_level_cert_and_key_java_client_unrelated_cert_failure
