@@ -50,13 +50,19 @@ function server_second_level_cert_and_key_java_client_first_level_cert_success()
 
 function server_first_level_cert_and_key_java_client_first_level_cert_success()
 {
- killall server &> /dev/null
- ../server/server ../ca/ca-cert.pem ../ca/ca-key.pem &> /dev/null &
+ SERVER_CERT="../ca/ca-cert.pem"
+ SERVER_KEY="../ca/ca-key.pem"
+ SERVER_RUN="../server/server $SERVER_CERT $SERVER_KEY"
 
- sleep 1
- CLIENT_OUT=$(eval $RUN_SSL_CLIENT ../ca/ca-cert.pem)
+ run_server "$SERVER_RUN"
+
+ CLIENT_CERT=../ca/ca-cert.pem
+ CLIENT_RUN="$RUN_SSL_CLIENT $CLIENT_CERT"
+ CLIENT_OUT=$(eval $CLIENT_RUN 2>&1)
  
- echo $CLIENT_OUT | grep -q "I hear you" && echo $0 "Success" || echo $1 "Failure: $CLIENT_OUT"
+ echo $CLIENT_OUT | grep -q "I hear you" \
+  && echo $0 "Success"  \
+  || { echo $1 "Failure: $CLIENT_OUT" && echo "${SERVER_RUN}" && echo "${CLIENT_RUN}"; }
 }
 
 function server_first_level_cert_and_key_java_client_second_level_cert_failure()
@@ -86,7 +92,7 @@ function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
 }
 
 #echo -n "1:" && server_second_level_cert_and_key_java_client_second_level_cert_success 
-echo -n "2:" && server_second_level_cert_and_key_java_client_first_level_cert_success
-#echo -n "3:" && server_first_level_cert_and_key_java_client_first_level_cert_success
+#echo -n "2:" && server_second_level_cert_and_key_java_client_first_level_cert_success
+echo -n "3:" && server_first_level_cert_and_key_java_client_first_level_cert_success
 #echo -n "4:" && server_first_level_cert_and_key_java_client_second_level_cert_failure
 #echo -n "5:" && server_second_level_cert_and_key_java_client_unrelated_cert_failure
