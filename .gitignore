@@ -6,3 +6,12 @@ compilation_flags.txt
 index.txt.attr
 *.swp
 SslClient.class
+boringssl-build/
+boringssl-copy/
+boringssl/
+build
+conscrypt/
+SslClient$1.class
+run_forecer
+run_forever
+
