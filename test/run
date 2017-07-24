@@ -99,8 +99,8 @@ function server_second_level_cert_and_key_java_client_unrelated_cert_failure()
   || { echo $1 "Failure: $CLIENT_OUT" && echo "${SERVER_RUN}" && echo "${CLIENT_RUN}"; }
 }
 
-#echo -n "1:" && server_second_level_cert_and_key_java_client_second_level_cert_success 
-#echo -n "2:" && server_second_level_cert_and_key_java_client_first_level_cert_success
-#echo -n "3:" && server_first_level_cert_and_key_java_client_first_level_cert_success
-#echo -n "4:" && server_first_level_cert_and_key_java_client_second_level_cert_failure
+echo -n "1:" && server_second_level_cert_and_key_java_client_second_level_cert_success 
+echo -n "2:" && server_second_level_cert_and_key_java_client_first_level_cert_success
+echo -n "3:" && server_first_level_cert_and_key_java_client_first_level_cert_success
+echo -n "4:" && server_first_level_cert_and_key_java_client_second_level_cert_failure
 echo -n "5:" && server_second_level_cert_and_key_java_client_unrelated_cert_failure
